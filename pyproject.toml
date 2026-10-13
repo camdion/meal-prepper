@@ -1,0 +1,10 @@
+[project]
+name = "meal-prepper"
+version = "0.1.0"
+description = "Find nutrition info, build meals, and prepare grocery lists for the week."
+readme = "README.md"
+authors = [
+    { name = "Cam Dion", email = "139920684+camdion@users.noreply.github.com" }
+]
+requires-python = ">=3.13"
+dependencies = []
