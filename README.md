@@ -7,16 +7,16 @@ This app allows users to get nutrition info, create meals from selected ingredie
 Need to:
 1. Create interface for grabbing and searching for ingredients from the USDA database(s)
 2. Create feature for favoriting ingredients
-  - Have search function put favorites at the top of the list
+    - Have search function put favorites at the top of the list
 3. Create meals features
-  - Allow grouping by ingredients
-  - Allow calculating total nutrition info
-  - Allow changing which nutrition facts are displayed based on config (create menu for updating config?)
+    - Allow grouping by ingredients
+    - Allow calculating total nutrition info
+    - Allow changing which nutrition facts are displayed based on config (create menu for updating config?)
 4. Create grocery list feature
-  - Allow adding ingredients
-  - Convert amounts to familiar UOMs (g -> cups/lbs/ea)
-  - Allow adding meals
-  - Send list to equivalent list app (google keep note?) so that list is easily portable
+    - Allow adding ingredients
+    - Convert amounts to familiar UOMs (g -> cups/lbs/ea)
+    - Allow adding meals
+    - Send list to equivalent list app (google keep note?) so that list is easily portable
 
 ## Getting Started
 This project uses [uv](https://docs.astral.sh/uv/getting-started/installation/) for creating the virtual environment.
@@ -25,4 +25,4 @@ This project uses [uv](https://docs.astral.sh/uv/getting-started/installation/) 
 
 ## Licensing
 This project uses the the following source for data on nutrition:
-  U.S. Department of Agriculture, Agricultural Research Service. FoodData Central, 2019. fdc.nal.usda.gov.
+> U.S. Department of Agriculture, Agricultural Research Service. FoodData Central, 2019. fdc.nal.usda.gov.
