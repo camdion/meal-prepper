@@ -1,5 +1,9 @@
+import os
+from dotenv import load_dotenv, dotenv_values
+
 def main():
-    print("Hello from meal-prepper!")
+    load_dotenv()
+    usda_key = os.getenv("USDA_API_KEY")
 
 
 if __name__ == "__main__":
