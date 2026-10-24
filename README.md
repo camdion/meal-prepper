@@ -5,7 +5,7 @@ This app allows users to get nutrition info, create meals from selected ingredie
 
 ## Plan (change to actual headers later)
 Need to:
-1. Create interface for grabbing and searching for ingredients from the USDA database(s)
+1. Create interface for grabbing and searching for ingredients from the USDA database(s) -> Done!
 2. Create feature for favoriting ingredients
     - Have search function put favorites at the top of the list
 3. Create meals features
