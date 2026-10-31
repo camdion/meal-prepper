@@ -4,9 +4,12 @@ import requests
 
 
 class USDA_API:
-    def __init__(self, token: str) -> None:
+    def __init__(self) -> None:
         self.__base_url = "https://api.nal.usda.gov/fdc/v1"
+
+    def connect(self, token: str) -> bool:
         self.__token = token
+        return self.get_food(["534358"]) is not None
 
     def get_food(self, fdcIds: list[str], format: str = "full", nutrients: list[str] | None = None):
         if format not in ["abridged", "full"]:
