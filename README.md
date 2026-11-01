@@ -3,9 +3,16 @@
 # Meal Prepper
 This app allows users to get nutrition info, create meals from selected ingredients, and create grocery lists from selected meals all through the command line.
 
+## Notes
+This app grabs the carbs, fat, protein, and fiber for foods. Since the USDA API below uses several fields for calories, this app uses a simple calculation for calories:
+> carbs * 4 + fat * 9 + protein * 4 = calories
+
+---
+
 ## Plan (change to actual headers later)
 Need to:
 1. Create interface for grabbing and searching for ingredients from the USDA database(s) -> Done!
+1. Use SQLite to build a database -> WIP
 2. Create feature for favoriting ingredients
     - Have search function put favorites at the top of the list
 3. Create meals features

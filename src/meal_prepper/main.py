@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
-import sqlite3
-
 import dotenv
+
 from api_utils import USDA_API
 from constants import *
 
@@ -20,12 +19,14 @@ def main():
         dotenv.set_key("./.env", "USDA_API_KEY", usda_key)
 
     print("Connection to USDA API Successful")
+    print("Starting Program...")
 
-    db = sqlite3.connect("meal_prepper.db")
+    search_query = input("Enter search query for food (\"exit\" to quit): ")
+    while search_query != "exit":
+        food_api.search_food(search_query)
+        search_query = input("Enter search query for food (\"exit\" to quit): ")
 
-    # ok so here's the fucking thing jane
-    # idk how this works but I think this is my plan
-    # 1. figure out layout
+    print("Ending Program...")
 
 if __name__ == "__main__":
     main()

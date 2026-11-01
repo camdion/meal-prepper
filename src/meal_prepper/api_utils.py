@@ -9,13 +9,16 @@ class USDA_API:
 
     def connect(self, token: str) -> bool:
         self.__token = token
-        return self.get_food(["534358"]) is not None
+        return self.get_food(["746782"],"abridged") is not None
 
-    def get_food(self, fdcIds: list[str], format: str = "full", nutrients: list[str] | None = None):
-        if format not in ["abridged", "full"]:
-            raise ValueError("format parameter must be \"full\" or \"abridged\"")
+    def get_food(self,
+        fdcIds: list[str],
+        format: str = "full",
+        nutrients: list[str] | None = None
+    ):
         if len(fdcIds) < 1:
-            raise ValueError("fdcIds parameter must have at least one ID")
+            print("fdcIds parameter must have at least one ID")
+            return None
 
         try:
             # Create request URL
@@ -23,12 +26,18 @@ class USDA_API:
             for fdcId in fdcIds:
                 request_url += f"fdcIds={fdcId}&"
 
-            if format != "full":
-                request_url += f"format={format}&"
+            if format == "abridged":
+                request_url += "format=abridged&"
 
-            if nutrients is not None:
-                for nutrient in nutrients:
-                    request_url += f"nutrients={nutrients}&"
+            if nutrients is None:
+                nutrients = [
+                    "203",
+                    "204",
+                    "205",
+                    "291"
+                ]
+            for nutrient in nutrients:
+                request_url += f"nutrients={nutrient}&"
 
             request_url += f"api_key={self.__token}"
 
@@ -36,11 +45,61 @@ class USDA_API:
             response = requests.get(request_url, headers={"accept":"application/json"})
 
             # Handle response
-            if response.status_code == 200:
-                return response
-            else:
+            if response.status_code != 200:
                 print(f"Error: {response.status_code}")
                 return None
+
+            trunkedResults = []
+            try:
+                for result in response.json():
+                    r = {
+                        "fdcId": result["fdcId"],
+                        "description": result["description"],
+                        "dataType": result["dataType"],
+                        "protein": 0,
+                        "fat": 0,
+                        "carbs": 0,
+                        "fiber": 0
+                    }
+                    if format != "abridged":
+                        if result["dataType"] == "Branded":
+                            if not "servingSize" in result:
+                                continue
+                            r["servingSize"] = result["servingSize"]
+                            r["servingSizeUOM"] = result["servingSizeUnit"]
+                        elif result["dataType"] == "Foundation":
+                            if not "foodPortions" in result:
+                                continue
+                            r["servingSize"] = result["foodPortions"][0]["gramWeight"]
+                            r["servingSizeUOM"] = "g"
+
+                    if "foodNutrients" not in result:
+                        continue
+
+                    if format != "abridged":
+                        food_nutrients = result["foodNutrients"]
+                        for nutrient in food_nutrients:
+                            if "nutrient" not in nutrient:
+                                continue
+                            match nutrient["nutrient"]["number"]:
+                                case "203":
+                                    r["protein"] = nutrient["amount"]
+                                case "204":
+                                    r["fat"] = nutrient["amount"]
+                                case "205":
+                                    r["carbs"] = nutrient["amount"]
+                                case "291":
+                                    r["fiber"] = nutrient["amount"]
+
+
+                    trunkedResults.append(r)
+
+                print(trunkedResults)
+                return trunkedResults
+            except KeyError as ke:
+                print(ke)
+                return None
+
 
         except requests.exceptions.RequestException as e:
             print(f"Request Error: {e}")
@@ -50,65 +109,51 @@ class USDA_API:
     def search_food(
         self,
         query: str, # May include search operators. See https://fdc.nal.usda.gov/help#bkmk-2
-        dataType: list[str] | None = None, # Branded, Foundation, Survey (FNDDS), or SR Legacy
-        pageSize: int = 50, # min is 1, max is 200
-        pageNumber: int = 1, # offset into data is pageNumber * pageSize
-        sortBy: str = "lowercaseDescription.keyword", # dataType.keyword, lowercaseDescription, fdcId, publishedDate
-        sortOrder: str = "asc", # asc or desc (asc is default)
+        getBranded: bool = True,
         brandOwner: str | None = None # Only applies to branded food
     ):
-        validDTypes = ["Branded", "Foundation", "Survey (FNDDS)", "SR Legacy"]
-        if dataType == None or len(dataType) == 0:
-            dataType = validDTypes
-        for dType in dataType:
-            if dType not in validDTypes:
-                raise ValueError(f"dataType must be one of {", ".join(validDTypes)}")
-
-        if (pageSize > 200 or pageSize < 1):
-            raise ValueError("pageSize must be between 1 and 200")
-
-        validSortKeys = ["lowercaseDescription.keyword","dataType.keyword","fdcId","publishedDate"]
-        if sortBy not in validSortKeys:
-            raise ValueError(f"sortBy must be one of {", ".join(validSortKeys)}")
-
-        validSortOrders = ["asc","desc"]
-        if sortOrder not in validSortOrders:
-            raise ValueError(f"sortOrder must be one of {", ".join(validSortOrders)}")
-
+        dataType = ["Foundation"]
+        if getBranded:
+            dataType.append("Branded")
 
         try:
             # Create request URL
-            request_url = self.__base_url + "/foods/search?"
+            query_start = self.__base_url + "/foods/search?"
             params = {}
             params["query"] = query
             params["dataType"] = ",".join(dataType)
-            params["pageSize"] = str(pageSize)
-            params["pageNumber"] = str(pageNumber)
-            params["sortBy"] = sortBy
-            params["sortOrder"] = sortOrder
+            params["pageSize"] = "200"
+            params["pageNumber"] = "1"
             params["api_key"] = self.__token
             if brandOwner is not None:
                 params["brandOwner"] = brandOwner
-            first_request_url = request_url + urllib.parse.urlencode(params)
-            print(f"first_request_url: {first_request_url}")
+            request_url = query_start + urllib.parse.urlencode(params)
 
-            response = requests.get(first_request_url, headers={"accept":"application/json"})
-
-            print("break?")
-            if response.status_code == 400 and "pageSize * pageNumber exceeded upper search results limit" in response.json():
-                params["pageNumber"] = 1
-                tmp_request_url = request_url + urllib.parse.urlencode(params)
-                response = requests.get(tmp_request_url, headers={"accept":"application/json"})
-                params["pageNumber"] = response.json()["totalPages"]
-                last_page_request_url = request_url + urllib.parse.urlencode(params)
-                response = requests.get(last_page_request_url, headers={"accept":"application/json"})
-
-            if response.status_code == 200 and response.text.strip():
-                print(f"Data found (Status Code {response.status_code})")
-                return response
-            else:
+            response = requests.get(request_url, headers={"accept":"application/json"})
+            if response.status_code != 200 and not response.text.strip():
                 print(f"Error: {response.status_code}")
                 return None
+
+            pageNum = 1
+            allResults = response.json()["foods"]
+
+            while response.json()["totalPages"] > pageNum:
+                pageNum += 1
+                params["pageNumber"] = str(pageNum)
+                request_url = query_start + urllib.parse.urlencode(params)
+                response = requests.get(request_url, headers={"accept":"application/json"})
+                if response.status_code != 200 and not response.text.strip():
+                    print(f"Error in search: {response.status_code}")
+                    print(params)
+
+                allResults.append(response.json()["foods"])
+
+            fdcIds = []
+            for result in allResults:
+                fdcIds.append(result["fdcId"])
+
+            return self.get_food(fdcIds)
+
 
         except requests.exceptions.RequestException as e:
             print(f"Request Error: {e}")
