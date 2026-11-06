@@ -1,7 +1,7 @@
 import sqlite3
 from collections import namedtuple
 
-Food = namedtuple("Food", ["fdc_id", "name", "calories", "carbs", "fat", "protein", "fiber", "serving_size", "favorited"])
+Food = namedtuple("Food", ["fdc_id", "name", "calories", "carbs", "fat", "protein", "fiber", "serving_size_uom", "favorited"])
 def food_row_factory(_cursor, row) -> Food:
     return Food._make(row)
 
@@ -9,11 +9,11 @@ Meal = namedtuple("Meal", ["meal_id", "name"])
 def meal_row_factory(_cursor, row) -> Meal:
     return Meal._make(row)
 
-MealIngredient = namedtuple("MealIngredient", ["meal_ingredient_id","meal_id","fdc_id", "amount", "name", "calories", "carbs", "fat", "protein", "fiber", "serving_size", "favorited"])
+MealIngredient = namedtuple("MealIngredient", ["meal_ingredient_id","meal_id","fdc_id", "amount", "name", "calories", "carbs", "fat", "protein", "fiber", "serving_size_uom", "favorited"])
 def meal_ingredient_row_factory(_cursor, row) -> MealIngredient:
     return MealIngredient._make(row)
 
-MealIngredientAlt = namedtuple("MealIngredientAlt", ["meal_ingredient_alt_id","meal_ingredient_id","alt_fdc_id", "name", "calories", "carbs", "fat", "protein", "fiber", "serving_size", "favorited"])
+MealIngredientAlt = namedtuple("MealIngredientAlt", ["meal_ingredient_alt_id","meal_ingredient_id","alt_fdc_id", "name", "calories", "carbs", "fat", "protein", "fiber", "serving_size_uom", "favorited"])
 def meal_ingredient_alt_row_factory(_cursor, row) -> MealIngredientAlt:
     return MealIngredientAlt._make(row)
 
@@ -144,7 +144,7 @@ class DB:
         try:
             data = (
                 "%" + name + "%",
-                favorites_only or "%"
+                "1" if favorites_only else "%"
             )
             c = cur.execute("""
                 SELECT
@@ -155,12 +155,12 @@ class DB:
                     fat,
                     protein,
                     fiber,
-                    serving_size,
+                    serving_size_uom,
                     favorited
                 FROM food
                 WHERE name LIKE ?
                 AND favorited LIKE ?
-                """, (data,))
+                """, data)
             return c.fetchall()
         except sqlite3.Error as e:
             print(f"could not get food {name}: {e}")
@@ -328,7 +328,7 @@ class DB:
                     f.fat,
                     f.protein,
                     f.fiber,
-                    f.serving_size,
+                    f.serving_size_uom,
                     f.favorited
                 FROM meal_ingredients mi
 
@@ -421,7 +421,7 @@ class DB:
                     f.fat,
                     f.protein,
                     f.fiber,
-                    f.serving_size,
+                    f.serving_size_uom,
                     f.favorited
                 FROM meal_ingredients m
 

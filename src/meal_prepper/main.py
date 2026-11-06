@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
+from screens.favorites import Favorites
 import dotenv
+from textual import on
 from textual.app import App, ComposeResult
 from textual.containers import Container
 from textual.widgets import Button, Header, Label
 
 from api_utils import USDA_API
+from common_ui_elements.quit import Quit
 from constants import *
-from screens.groceries import Groceries
 from screens.meals import Meals
 from screens.search import Search
 from sql_utils import DB
@@ -29,23 +31,22 @@ class MyApp(App):
             yield Button("View Favorites", id="favorites", variant="primary")
             yield Button("Search Food", id="food", variant="primary")
             yield Button("View Meals", id="meals", variant="success")
-            yield Button("Create Grocery List", id="groceries", variant="success")
-            yield Button("Quit", id="quit", variant="error")
+            yield Quit()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "quit":
-            self.exit(event.button.id)
-        elif event.button.id == "favorites":
-            self.push_screen(Search(self.db, self.food_api, "favorites"))
+        if event.button.id == "favorites":
+            self.push_screen(Favorites(self.db))
         elif event.button.id == "food":
-            self.push_screen(Search(self.db, self.food_api, "food"))
+            self.push_screen(Search(self.db, self.food_api))
         elif event.button.id == "meals":
             self.push_screen(Meals(self.db, self.food_api))
-        #elif event.button.id == "groceries":
-            #self.push_screen(Groceries(self.db, self.food_api))
         else:
             print("nope")
 
+    @on(Quit.QuitPressed)
+    def quit(self, event: Quit.Pressed):
+        event.stop()
+        self.exit()
 
 def main():
     usda_key = dotenv.get_key("./.env","USDA_API_KEY") or "foobar"
@@ -64,7 +65,7 @@ def main():
     print("Starting Program...")
 
     db = DB()
-    print(db.get_meals())
+    print(db.search_food("", True))
     app = MyApp(db, food_api)
     reply = app.run()
 

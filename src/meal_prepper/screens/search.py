@@ -1,27 +1,26 @@
-# make the screen for searching food
-from typing import Literal
-
+from textual import on
 from textual.app import ComposeResult, Screen
 from textual.containers import Container
-from textual.widgets import Button, Header, Input, Placeholder
+from textual.widgets import Header, Input, Placeholder
+
+from common_ui_elements.quit import Quit
 
 
 class Search(Screen):
-    def __init__(self, db, food_api, search_type: Literal["food","favorites"]):
+    def __init__(self, db, food_api):
         super().__init__()
         self.db = db
         self.food_api = food_api
-        self.search_type = search_type
 
     def compose(self) -> ComposeResult:
         yield Header()
         yield Input()
-        yield Button("Quit", id="quit", variant="error")
+        yield Quit()
 
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "quit":
-            event.stop()
-            self.dismiss(self.search_type)
+    @on(Quit.QuitPressed)
+    def quit(self, event: Quit.Pressed):
+        event.stop()
+        self.dismiss()
 
 class SearchResults(Container):
     def compose(self) -> ComposeResult:
