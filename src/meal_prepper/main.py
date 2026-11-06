@@ -27,21 +27,22 @@ class MyApp(App):
     def compose(self) -> ComposeResult:
         yield Header()
         with Container():
-            yield Label("Welcome to the Meal Pepper App!")
             yield Button("View Favorites", id="favorites", variant="primary")
             yield Button("Search Food", id="food", variant="primary")
             yield Button("View Meals", id="meals", variant="success")
             yield Quit()
 
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "favorites":
-            self.push_screen(Favorites(self.db))
-        elif event.button.id == "food":
-            self.push_screen(Search(self.db, self.food_api))
-        elif event.button.id == "meals":
-            self.push_screen(Meals(self.db, self.food_api))
-        else:
-            print("nope")
+    @on(Button.Pressed, "#favorites")
+    def load_favorites(self):
+        self.push_screen(Favorites(self.db))
+
+    @on(Button.Pressed, "#food")
+    def load_search_food(self):
+        self.push_screen(Search(self.db, self.food_api))
+
+    @on(Button.Pressed, "#meals")
+    def load_meals(self):
+        self.push_screen(Meals(self.db, self.food_api))
 
     @on(Quit.QuitPressed)
     def quit(self, event: Quit.Pressed):
@@ -65,7 +66,6 @@ def main():
     print("Starting Program...")
 
     db = DB()
-    print(db.search_food("", True))
     app = MyApp(db, food_api)
     reply = app.run()
 

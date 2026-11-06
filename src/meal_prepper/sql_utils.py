@@ -100,18 +100,20 @@ class DB:
         data = (
             fdc_id,
             name,
-            carbs * 100 / serving_size,
-            fat * 100 / serving_size,
-            protein * 100 / serving_size,
-            fiber * 100 / serving_size,
+            carbs * 4.0 + fat * 9.0 + protein * 4.0,
+            carbs * 100.0 / serving_size,
+            fat * 100.0 / serving_size,
+            protein * 100.0 / serving_size,
+            fiber * 100.0 / serving_size,
             serving_size_uom,
-            False
+            0
         )
         cur = self.connect()
         try:
+            print(data)
             cur.execute("""
                 INSERT INTO food (fdc_id, name, calories, carbs, fat, protein, fiber, serving_size_uom, favorited)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT (fdc_id)
                 DO UPDATE SET
                     name=excluded.name,
@@ -120,8 +122,7 @@ class DB:
                     fat=excluded.fat,
                     protein=excluded.protein,
                     fiber=excluded.fiber,
-                    serving_size_uom=excluded.serving_size_uom,
-                    favorited=excluded.favorited
+                    serving_size_uom=excluded.serving_size_uom
                 """, data)
 
             cur.connection.commit()
@@ -133,6 +134,41 @@ class DB:
             return False
         finally:
             cur.connection.close()
+
+    def get_food(
+        self,
+        fdc_ids: list[int]
+    ) -> list[Food]:
+        cur = self.connect()
+        cur.row_factory = food_row_factory
+        results = []
+        try:
+            for fdc_id in fdc_ids:
+                c = cur.execute("""
+                    SELECT
+                        fdc_id,
+                        name,
+                        calories,
+                        carbs,
+                        fat,
+                        protein,
+                        fiber,
+                        serving_size_uom,
+                        favorited
+                    FROM food
+                    WHERE fdc_id LIKE ?
+                    """, (fdc_id,))
+                row = c.fetchone()
+                if row is not None:
+                    results.append(row)
+            return results
+
+        except sqlite3.Error as e:
+            print(f"could not get food {fdc_ids}: {e}")
+            return []
+        finally:
+            cur.connection.close()
+
 
     def search_food(
         self,

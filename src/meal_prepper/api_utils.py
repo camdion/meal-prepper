@@ -19,7 +19,7 @@ class Food:
         self.fat = fat
         self.protein = protein
         self.fiber = fiber
-        self.serving_size = 100
+        self.serving_size = 100.0
         self.serving_size_uom = "g"
         self.calories = carbs * 4 + fat * 9 + protein * 4
 
@@ -49,7 +49,7 @@ class USDA_API:
             params = {}
             params["query"] = query
             params["dataType"] = ",".join(dataType)
-            params["pageSize"] = "200"
+            params["pageSize"] = "100"
             params["pageNumber"] = pageNumber
             params["api_key"] = self.__token
             if brandOwner is not None:
