@@ -1,3 +1,7 @@
+MyApp #main_menu_buttons_container {
+    align: center middle;
+}
+
 MyApp Button {
     width: 40;
     margin: 2;
@@ -29,4 +33,44 @@ Ribbon {
 
 Favorites ListItem {
     layout: horizontal;
+}
+
+SearchInput Input {
+    width: 60;
+}
+
+Search #search_query {
+    height: 5;
+}
+
+Search #search_input_container {
+    width: 3fr;
+}
+Search Label {
+    margin-left: 1;
+}
+Search #use_branded_container {
+    width: auto;
+}
+
+Search #use_branded {
+    max-width: 10;
+}
+
+Search #search_results {
+    height: 1fr;
+}
+
+Search #bottom_search_pane {
+    dock: bottom;
+    height: auto;
+}
+
+Favorites #bottom_favorites_pane {
+    dock: bottom;
+    height: auto;
+}
+
+Favorites #favorites_table {
+    height: 1fr;
 }

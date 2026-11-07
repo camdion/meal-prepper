@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from screens.favorites import Favorites
 import dotenv
 from textual import on
 from textual.app import App, ComposeResult
@@ -9,6 +8,7 @@ from textual.widgets import Button, Header, Label
 from api_utils import USDA_API
 from common_ui_elements.quit import Quit
 from constants import *
+from screens.favorites import Favorites
 from screens.meals import Meals
 from screens.search import Search
 from sql_utils import DB
@@ -16,7 +16,7 @@ from sql_utils import DB
 
 class MyApp(App):
     TITLE = "Meal Prepper"
-    SUB_TITLE = "Macro tracking - Hard Mode"
+    SUB_TITLE = "Macro tracking (Hard Mode)"
     CSS_PATH = "style_sheet.tcss"
 
     def __init__(self, db, food_api):
@@ -26,10 +26,10 @@ class MyApp(App):
 
     def compose(self) -> ComposeResult:
         yield Header()
-        with Container():
-            yield Button("View Favorites", id="favorites", variant="primary")
+        with Container(id="main_menu_buttons_container"):
+            yield Button("View Favorites", id="favorites", variant="default")
             yield Button("Search Food", id="food", variant="primary")
-            yield Button("View Meals", id="meals", variant="success")
+            yield Button("View and Edit Meals", id="meals", variant="success")
             yield Quit()
 
     @on(Button.Pressed, "#favorites")
@@ -38,7 +38,7 @@ class MyApp(App):
 
     @on(Button.Pressed, "#food")
     def load_search_food(self):
-        self.push_screen(Search(self.db, self.food_api))
+        self.push_screen(Search(self.db, self.food_api, "favorites"))
 
     @on(Button.Pressed, "#meals")
     def load_meals(self):
