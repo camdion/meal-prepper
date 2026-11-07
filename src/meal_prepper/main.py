@@ -3,7 +3,7 @@ import dotenv
 from textual import on
 from textual.app import App, ComposeResult
 from textual.containers import Container
-from textual.widgets import Button, Header, Label
+from textual.widgets import Button, Header
 
 from api_utils import USDA_API
 from common_ui_elements.quit import Quit

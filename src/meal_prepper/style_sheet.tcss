@@ -7,32 +7,13 @@ MyApp Button {
     margin: 2;
     padding: 1 2;
 }
+
 MyApp Button:focus-within {
     border: heavy;
 }
 
 SearchFood Input {
     dock: top;
-}
-
-Meals Button {
-    height: 4;
-    padding: 0;
-    margin: 1;
-    width: 1fr;
-}
-
-MealContainer ListItem {
-    layout: horizontal;
-}
-
-Ribbon {
-    width: 1fr;
-    layout: horizontal;
-}
-
-Favorites ListItem {
-    layout: horizontal;
 }
 
 SearchInput Input {
@@ -73,4 +54,84 @@ Favorites #bottom_favorites_pane {
 
 Favorites #favorites_table {
     height: 1fr;
+}
+
+#bottom_pane {
+    dock: bottom;
+    height: auto;
+}
+
+MealOptions {
+    height: 3;
+}
+
+MealOptions Placeholder {
+    width: 1fr;
+    height: 100%;
+}
+
+MealOptions Button {
+    width: 1fr;
+    margin: 0;
+    height: 100%;
+    padding: 0;
+}
+
+EditMealScreen #edit_meal_screen_display_totals {
+    dock: top;
+    height: 3;
+}
+
+EditMealScreen #edit_meal_screen_display_totals Placeholder {
+    width: 1fr;
+    height: 100%;
+}
+
+EditMealScreen VerticalScroll {
+    height: 1fr;
+}
+
+EditMealScreen EMMealIngredient {
+    height: 3;
+    width: 1fr;
+}
+
+EditMealScreen EMMealIngredient Button {
+    padding: 0;
+    margin: 0;
+}
+
+EditMealScreen VerticalScroll Button {
+    width: 1fr;
+    height: 3;
+}
+EditMealScreen VerticalScroll Placeholder {
+    width: 1fr;
+    height: 3;
+}
+
+EditMealScreen #edit_meal_screen_add_ing {
+    width: 40;
+    height: auto;
+}
+
+EnterAmount {
+    align: center middle;
+}
+
+EnterAmount Vertical {
+    align: center middle;
+}
+
+EnterAmount Horizontal {
+    align: center middle;
+}
+
+EnterAmount Input {
+    width: 50%;
+}
+
+EnterAmount Placeholder {
+    width: 1fr;
+    height: 5;
 }

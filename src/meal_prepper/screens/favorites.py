@@ -1,11 +1,12 @@
-from textual.coordinate import Coordinate
 from textual import on, work
 from textual.app import ComposeResult, Screen
 from textual.containers import Horizontal, Vertical
-from textual.widgets import DataTable, Label, Button
+from textual.coordinate import Coordinate
+from textual.widgets import Button, DataTable, Label
 
 from common_ui_elements.quit import Quit
 from sql_utils import DB
+
 
 class AreYouSure(Screen):
     def __init__(self, fdc_id: int, food_name: str, db: DB):

@@ -1,20 +1,20 @@
-from textual.coordinate import Coordinate
 import asyncio
 from typing import Literal
 
 from textual import on, work
 from textual.app import ComposeResult, Screen
 from textual.containers import Horizontal, Vertical
+from textual.coordinate import Coordinate
 from textual.widgets import DataTable, Input, Label, Switch
 
 import api_utils
 import sql_utils
 from common_ui_elements.quit import Quit
 
-type searchTypes = Literal["favorites","meals"]
+type SearchTypes = Literal["favorites","meals"]
 
 class Search(Screen):
-    def __init__(self, db, food_api, search_type: searchTypes):
+    def __init__(self, db, food_api, search_type: SearchTypes):
         super().__init__()
         self.db: sql_utils.DB = db
         self.food_api: api_utils.USDA_API = food_api
@@ -65,10 +65,9 @@ class Search(Screen):
 
     @on(DataTable.RowSelected)
     def update_favorite(self, event: DataTable.RowSelected):
-        fdc_id_coord = Coordinate(event.cursor_row, 1)
-        fdc_id = event.data_table.get_cell_at(fdc_id_coord)
-
         if self.search_type == "favorites":
+            fdc_id_coord = Coordinate(event.cursor_row, 1)
+            fdc_id = event.data_table.get_cell_at(fdc_id_coord)
             db_food: list[sql_utils.Food] = self.db.get_food([fdc_id])
             if db_food is None or len(db_food) < 1:
                 return
@@ -77,11 +76,13 @@ class Search(Screen):
             favorited_coord = Coordinate(event.cursor_row, 0)
             event.data_table.update_cell_at(favorited_coord, "yes" if new_favorited_status else "no")
         elif self.search_type == "meals":
+            fdc_id_coord = Coordinate(event.cursor_row, 0)
+            fdc_id = event.data_table.get_cell_at(fdc_id_coord)
             self.dismiss(fdc_id)
 
 
 class SearchResults(DataTable):
-    def __init__(self, last_column_type: searchTypes, **kwargs):
+    def __init__(self, last_column_type: SearchTypes, **kwargs):
         super().__init__(**kwargs)
         self.last_column_type = last_column_type
         self.cursor_type = "row"
