@@ -23,6 +23,7 @@ The .env file key-value mapping should look something like this:
 This project uses [uv](https://docs.astral.sh/uv/getting-started/installation/) for creating the virtual environment.
 
 Once that's set you can run the program with the following CLI commands after navigating to the root of the repository directory:
+> uv sync
 > source .venv/bin/activate
 > uv run src/meal_prepper/main.py
 
