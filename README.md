@@ -9,7 +9,9 @@ This started as a requirement for a boot.dev course in devops. I'm expecting to 
 
 ## Notes
 This app grabs the carbs, fat, protein, and fiber for foods. Since the USDA API below uses several fields for calories, this app uses a simple calculation for calories:
-> carbs * 4 + fat * 9 + protein * 4 = calories
+```python
+calories = carbs * 4 + fat * 9 + protein * 4
+```
 
 ---
 
@@ -18,14 +20,25 @@ First, clone the repository using your preferred method.
 
 You'll need a .env file in the same folder as main.py with a value for the USDA_API_KEY key. You can get your own free USDA API key [here](https://fdc.nal.usda.gov/api-key-signup). You can also enter this the first time you run the program.
 The .env file key-value mapping should look something like this:
-> USDA_API_KEY='mygloriouskeyvalue'
+```.env
+USDA_API_KEY='mygloriouskeyvalue'
+```
 
 This project uses [uv](https://docs.astral.sh/uv/getting-started/installation/) for creating the virtual environment.
 
 Once that's set you can run the program with the following CLI commands after navigating to the root of the repository directory:
-> uv sync
-> source .venv/bin/activate
-> uv run src/meal_prepper/main.py
+Sync the uv venv with the uv.lock file
+```bash
+uv sync
+```
+Start the virtual environment
+```bash
+source .venv/bin/activate
+```
+Run the app
+```bash
+uv run src/meal_prepper/main.py
+```
 
 ## Licensing
 This project uses the the following source for data on nutrition:
